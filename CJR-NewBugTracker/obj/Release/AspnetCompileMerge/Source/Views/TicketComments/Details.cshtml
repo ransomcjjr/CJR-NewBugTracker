@@ -1,0 +1,59 @@
+﻿@model CJR_NewBugTracker.Models.TicketComment
+@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<div>
+    <h3>Ticket Comment Details</h3>
+    <p>
+        @{
+            var curUser = User.Identity.GetUserId();
+            if (User.IsInRole("Admin") || User.IsInRole("ProjectManager") || curUser == Model.UserId )
+            {
+                <span>|</span> @Html.ActionLink("Edit", "Edit", new { id = Model.Id })<span>|</span>
+                @Html.ActionLink("Delete", "Delete", new { id = Model.Id }) <span>|</span>
+            }
+        }
+        @Html.ActionLink("Back to ticket Details", "Details", "Tickets", new { id = Model.Ticket.Id }, null) |
+        
+    </p>
+    <hr />
+
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Ticket.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Ticket.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Comment)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Comment)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Created)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.FirstName)
+        </dd>
+
+    </dl>
+</div>
+

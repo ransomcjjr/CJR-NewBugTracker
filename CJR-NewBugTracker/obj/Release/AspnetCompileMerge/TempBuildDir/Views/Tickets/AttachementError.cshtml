@@ -1,0 +1,42 @@
+﻿@model CJR_NewBugTracker.Models.Ticket
+
+@{
+    ViewBag.Title = "Attachement Error";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no">
+    <meta charset="UTF-8">
+    <meta name="description" content="Violate Responsive Admin Template">
+    <meta name="keywords" content="Super Admin, Admin, Template, Bootstrap">
+    <title>RFP Bug Tracker</title>
+
+    <!-- CSS -->
+    <link href="~/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/css/style.css" rel="stylesheet">
+    <link href="~/css/generics.css" rel="stylesheet">
+</head>
+
+<div id="skin-blur-violate">
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <h1 class="text-center">Error Uploading Attachment!</h1>
+    <div id="contactdiv">
+        <img src="~/img/RFPlogoClearWeblarge.png" />
+    </div>
+    <div>&emsp;</div>
+    <div class="text-center text-warning">
+        <p>File was unable to be uploaded. Please check to make sure it is not larger that 64 meg<br /> and is of type pdf, doc or xls</p>
+    </div>
+    <div class="text-center">
+        <input type="hidden" id="id" name="id" value="@Model.Id" />
+        <button class="img-rounded btn btn-default btn-danger" type="submit">Back to Ticket</button>
+    </div>
+    }  
+</div>
+<div>&emsp;</div>
+
+

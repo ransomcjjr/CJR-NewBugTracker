@@ -1,0 +1,160 @@
+﻿@model CJR_NewBugTracker.Models.Project
+@using CJR_NewBugTracker.Models
+@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "Details";
+}
+@{
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+<head>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+</head>
+
+<div>
+    <h3>Project Details</h3>
+    <p>
+        @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+        {
+            <span>|</span> @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) <span>|</span>
+            @Html.ActionLink("Assign Users", "ProjectAssign", new { ProjectId = Model.Id }, null)
+        }
+        | @Html.ActionLink("Back to List", "Index")|
+    </p>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt>Users Assigned To Project</dt>
+        <dd>
+         @foreach (var user in Model.User)
+         {
+             var helper = new UserRoleAssignHelper();
+             var roles = helper.ListUserRoles(user.Id);
+
+        @Html.DisplayFor(m => user.FullName)<span>&emsp;(</span>
+             foreach (var role in roles)
+             {
+            @role
+             }
+          <span>)</span> <br />
+         }
+    </dd>
+</d1>
+</div>
+<hr />
+ <div> 
+ <h3>Project Tickets</h3> 
+     @if (User.IsInRole("Submitter"))
+         {
+       <span>|</span>@Html.ActionLink("Add Ticket", "Create", "Tickets", new { id = Model.Id }, null)<span>|</span>
+     }
+        <table id="myTable" class="skin-blur-violate">
+            <thead>
+                <tr>
+                    <th>
+                        Title
+                    </th>
+                    <th>
+                        Description
+                    </th>
+                    <th>
+                        Priority
+                    </th>
+                    <th>
+                        Catagory
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Owner
+                    </th>
+                    <th>
+                        Developer
+                    </th>
+                    <th>
+                        Created
+                    </th>
+                    <th>
+                        Updated
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+               
+                @{ 
+                    var loginUser = User.Identity.GetUserId();
+                    ProjectAssignHelper PAH = new ProjectAssignHelper();
+                    var AssignedProject = PAH.IsUserOnProject(loginUser, Model.Id);
+                }
+                
+                @foreach (var ticket in Model.Tickets)
+                {
+                    if ((User.IsInRole("Admin")) || (User.IsInRole("ProjectManager") && AssignedProject == true) || (ticket.AssignedToUserId == loginUser) || (ticket.OwnerUserId == loginUser))
+                    { 
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(m => ticket.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => ticket.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => ticket.TicketPriority.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => ticket.TicketType.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => ticket.TicketStatus.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => ticket.OwnerUser.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => ticket.AssignedToUser.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => ticket.Created)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => ticket.Updated)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", "Tickets", new { id = ticket.Id }, null) |
+                            @Html.ActionLink("Details", "Details", "Tickets", new { id = ticket.Id }, null) |
+                        </td>
+                    </tr>
+                 }
+                }
+            </tbody>
+     </table>
+</div>
+
+@section scripts {
+
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script>
+    $(document).ready(function () {
+        $('#myTable').DataTable({
+            "order": [[7, "desc"]]
+        });
+    });
+    </script>
+
+}

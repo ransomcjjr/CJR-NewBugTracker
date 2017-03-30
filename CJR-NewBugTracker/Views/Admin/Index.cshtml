@@ -1,0 +1,44 @@
+﻿@model IEnumerable<CJR_NewBugTracker.Models.AdminUserViewModel>
+@{
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <div> 
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Assigned Roles</th>
+                    <th></th>
+                </tr>
+            </thead>
+            @foreach (var item in Model)
+            {<tr>
+                <td>@Html.DisplayFor(m => item.User.FirstName)&emsp;@Html.DisplayFor(m => item.User.LastName)
+            </td>
+            <td>
+                @foreach (var strRole in item.Role)
+                {
+                    @strRole <br />
+                }
+
+            </td>
+
+            <td><span>|</span>@Html.ActionLink("Change Roles", "SelectRole","Admin", new { id = item.User.Id },null)<span>|</span></td>
+            </tr>
+            }
+           
+        </table>
+
+
+    </div>
+</body>
+</html>

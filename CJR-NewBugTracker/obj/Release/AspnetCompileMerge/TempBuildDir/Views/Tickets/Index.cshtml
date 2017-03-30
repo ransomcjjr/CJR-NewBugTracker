@@ -1,0 +1,109 @@
+﻿@model IEnumerable<CJR_NewBugTracker.Models.Ticket>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+<head>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+</head>
+
+<body>
+<h2>My Tickets</h2>
+@if (User.IsInRole("Submitter"))
+{
+<p>
+   <span>|</span> @Html.ActionLink("Create New", "Create") <span>|</span>
+</p>
+}
+<div>
+    <table id="myTable" class="skin-blur-violate">
+        <thead>
+            <tr>
+                <th>
+                    Title
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>
+                    Priority
+                </th>
+                <th>
+                    Catagory
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    Owner
+                </th>
+                <th>
+                    Developer
+                </th>
+                <th>
+                    Created
+                </th>
+                <th>
+                    Updated
+                </th>
+                <th>&emsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TicketPriorityId)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TicketType.Name)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TicketStatus.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OwnerUser.FullName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AssignedToUser.FullName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Created)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Updated)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+</body>
+
+
+@section scripts {
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script>
+    $(document).ready(function () {
+        $('#myTable').DataTable({
+            "order": [[7, "desc"]]
+        });
+    });
+    </script>
+}

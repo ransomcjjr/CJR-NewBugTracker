@@ -1,0 +1,307 @@
+﻿@model CJR_NewBugTracker.Models.Ticket
+@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+<head>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+</head>
+<div>
+    <h3>Ticket Details</h3>
+    <p>
+      |  @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+        @Html.ActionLink("Back to Projects", "Index", "Projects") |
+        @Html.ActionLink("Add Comment", "Create", "TicketComments", new { id = Model.Id },null) |
+    </p>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Assinged Developer:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AssignedToUser.FullName)
+        </dd>
+
+        <dt>
+            Created By:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OwnerUser.FullName)
+        </dd>
+
+        <dt>
+            Project Name:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Project.Name)
+        </dd>
+
+        <dt>
+            Ticket Status:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TicketStatus.Name)
+        </dd>
+
+        <dt>
+           Ticket Type:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TicketType.Name)
+        </dd>
+
+        <dt>
+            Ticket Title:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+           Description:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            Date Created
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+
+        <dt>
+            Last Updated:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Updated)
+        </dd>
+
+        <dt>
+            Ticket Priority
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TicketPriority.Name)
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+
+    </dl>
+</div>
+
+<hr />
+<div>&emsp;</div>
+<div>
+    <h3>Add Attachment</h3>
+    @using (Html.BeginForm("TicketAttachment", "Tickets", FormMethod.Post, new { enctype = "Multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            <div class="col-md-offset-1 col-md-11">
+                <span>Description:</span><input name="Description" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-1 col-md-11">
+                <input name="pdfFile" type="file" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-1 col-md-11">
+                <input type="submit" value="Add Attachment" class="btn btn-default" />
+            </div>
+        </div>
+        <input type="hidden" id="TicketId" name="TicketId" value="@Model.Id" />
+    }
+    <div>&emsp;</div>
+    <hr />
+   <div>&emsp;</div>
+    <h3>List of Attachments</h3>
+    <table id="myTable" class="table skin-blur-violate">
+        <thead>
+            <tr>
+                <th>
+                    Description:
+                </th>
+                <th>
+                    Created:
+                </th>
+                <th>
+                    Created By:
+                </th>
+                <th>
+                    File
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var attachment in Model.TicketAttachements )
+            { 
+          <tr>
+                        <td>
+                            @Html.DisplayFor(m => attachment.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => attachment.Created)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => attachment.User.FullName)
+                        </td>
+                        <td>
+                           <a href="@Url.Content(attachment.FilePath)" target="_blank">View</a>
+                        </td>
+                        <td>
+                            @{ 
+                            var curUser = User.Identity.GetUserId();
+                            if (User.IsInRole("Admin") || User.IsInRole("ProjectManager") || curUser == attachment.UserId)
+                            {
+                                <span>|</span> @Html.ActionLink("Delete", "DeleteAttachment", "Tickets", new { id = attachment.Id }, null) <span>|</span>
+                             }
+                            else
+                            {
+                            <h5>N/A</h5>
+                            }
+                            }
+                        </td>
+                    </tr>
+                }
+          </tbody>
+        </table>
+    <div>&emsp;</div>
+    <h3>Ticket Comments</h3>
+    <div>&emsp;</div>
+    <hr />
+    <div>&emsp;</div>
+    <table id="TicketComments" class="table">
+        <thead>
+        <tr>
+            <th>
+                Created By
+            </th>
+            <th>
+                Comment
+            </th>
+            <th>
+                Created
+            </th>
+            <th></th>
+        </tr>
+</thead>
+            <tbody style="overflow:auto;height:50px;">
+                @foreach (var item in Model.TicketComments)
+            {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.User.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Comment)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Created)
+                        </td>
+                        <td>
+                            <span>|</span> @Html.ActionLink("Details", "Details", "TicketComments", new { id = item.Id }, null) <span>|</span>
+
+                            @{
+                                var curUser = User.Identity.GetUserId();
+                                if (User.IsInRole("Admin") || User.IsInRole("ProjectManager") || curUser == item.UserId)
+                                {
+                                    @Html.ActionLink("Edit", "Edit", "TicketComments", new { id = item.Id }, null) <span>|</span>
+                                    @Html.ActionLink("Delete", "Delete", "TicketComments", new { id = item.Id }, null) <span>|</span>
+                                }
+                            }
+                        </td>
+                    </tr>
+                                }
+            </tbody>
+    </table>
+    <div>&emsp;</div>
+    <h3>Ticket History</h3>
+    <div>&emsp;</div>
+    <hr />
+    <div>&emsp;</div>
+    <table id="TicketHistory" class="table">
+        <thead>
+        <tr>
+            <th>
+                Property
+            </th>
+            <th>
+                Old Value
+            </th>
+            <th>
+                New Value
+            </th>
+            <th>
+                User
+            </th>
+            <th>
+                Date
+            </th>
+        </tr>
+</thead>
+        <tbody>
+        @foreach (var item in Model.TicketHistories)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Property)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OldValue)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NewValue)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Changed)
+                </td>
+            </tr>
+       }
+            </tbody>
+    </table>
+</div>
+@section scripts {
+
+<script src="~/Scripts/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#TicketComments').DataTable({
+            "order": [[2, "desc"]]
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#TicketHistory').DataTable({
+            "order": [[4, "desc"]]
+        });
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('#myTable').DataTable({
+            "order": [[1, "desc"]]
+        });
+    });
+</script>
+}
